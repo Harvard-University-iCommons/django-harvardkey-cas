@@ -13,26 +13,28 @@ Installation and configuration
 
 Install using ``pip`` directly from GitHub:
 
-``pip install https://github.huit.harvard.edu/tbd``
+``pip install git+ssh://git@github.huit.harvard.edu/HUIT/django-harvardkey-cas.git``
 
 Add ``django_cas_ng`` to your ``INSTALLED_APPS``:
 
-``
-INSTALLED_APPS = [
-    'django_cas_ng',
-    ...
-]
-``
+::
+
+  INSTALLED_APPS = [
+      'django_cas_ng',
+      ...
+  ]
+
 
 Make sure the auth middleware is installed:
 
-``
-MIDDLEWARE_CLASSES = [
-    ...
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    ...
-]
-``
+::
+
+  MIDDLEWARE_CLASSES = [
+      ...
+      'django.contrib.auth.middleware.AuthenticationMiddleware',
+      ...
+  ]
+
 
 Configuration variables:
 
@@ -49,8 +51,28 @@ Usage
 
 For class-based views, use mixins:
 
-<tbd>
+::
+
+  from django.views.generic import ListView
+  from harvardkey_cas.mixins import GroupMembershipRequiredMixin
+
+  ...
+
+  class MyView(GroupMembershipRequiredMixin, ListView):
+    allowed_groups = 'mygroup'
+    ...
+
 
 For function-based views, use decorators:
 
-<tbd>
+::
+
+  from harvardkey_cas.decorators import group_membership_restriction
+  from django.contrib.auth.decorators import login_required
+
+  ...
+
+  @login_required
+  @group_membership_restriction(allowed_groups='mygroup')
+  def index(request):
+    ...
