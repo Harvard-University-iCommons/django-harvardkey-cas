@@ -111,7 +111,6 @@ class CASAuthBackend(CASBackend):
                 else:
                     logger.error('No user groups from CAS handshake')
             except Exception as ex:
-                print(ex)
                 logger.error('could not load user groups, ex=%s' % ex)
 
         else:
