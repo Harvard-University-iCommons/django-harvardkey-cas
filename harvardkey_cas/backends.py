@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from django_cas_ng.backends import CASBackend
 from django_cas_ng.utils import get_cas_client
 from django.contrib.auth import get_user_model
@@ -109,10 +111,11 @@ class CASAuthBackend(CASBackend):
                 else:
                     logger.error('No user groups from CAS handshake')
             except Exception as ex:
-                print ex
+                print(ex)
                 logger.error('could not load user groups, ex=%s' % ex)
 
         else:
             logger.warn(" no user attributes found in CAS response")
 
         return user
+
