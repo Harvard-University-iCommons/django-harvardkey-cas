@@ -35,16 +35,24 @@ Make sure the auth middleware is installed:
       ...
   ]
 
+Add the CASAuthBackend:
+
+::
+
+  AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'harvardkey_cas.backends.CASAuthBackend',
+  )
 
 Configuration variables:
 
-* CAS server:
+See the django_cas_ng docs for the full list of configuration
+variables, but make sure that at least the CAS server URL is
+defined:
 
-  ``
+::
+
   CAS_SERVER_URL = 'https://www.pin1.harvard.edu/cas/'
-  ``
-
-
 
 Usage
 =====
