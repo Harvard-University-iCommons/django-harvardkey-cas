@@ -11,9 +11,13 @@ for authorization based on membership in Grouper groups.
 Installation and configuration
 ==============================
 
-Install using ``pip`` directly from GitHub:
+This module can be installed using ``pip`` directly from GitHub:
 
 ``pip install git+ssh://git@github.huit.harvard.edu/HUIT/django-harvardkey-cas.git``
+
+Alternatively it can be included in your ``requirements.txt`` file (update the version numbers as appropriate):
+
+``git+ssh://git@github.com/Harvard-University-iCommons/django-harvardkey-cas.git@v1.0#egg=django-harvardkey-cas==1.0``
 
 Add ``django_cas_ng`` to your ``INSTALLED_APPS``:
 
