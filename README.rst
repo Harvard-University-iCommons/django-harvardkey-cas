@@ -56,7 +56,30 @@ defined:
 
 Usage
 =====
+Requiring users to log in
+-------------------------
+For class-based views, use the LoginRequiredMixin:
 
+::
+
+  from harvardkey_cas.mixins import LoginRequiredMixin
+
+  class SchoolListView(LoginRequiredMixin, generic.ListView):
+      ...
+
+
+For function-based views, use the standard Django login_required decorator:
+
+::
+
+  from django.contrib.auth.decorators import login_required
+
+  @login_required
+  def index(request):
+      ...
+
+Authorizing users based on membership in a group
+------------------------------------------------
 For class-based views, use mixins:
 
 ::
@@ -70,6 +93,8 @@ For class-based views, use mixins:
     allowed_groups = 'mygroup'
     ...
 
+Note that the GroupMembershipRequiredMixin implies the LoginRequiredMixin;
+you don't need to use both.
 
 For function-based views, use decorators:
 
@@ -84,3 +109,6 @@ For function-based views, use decorators:
   @group_membership_restriction(allowed_groups='mygroup')
   def index(request):
     ...
+
+The allowed_groups field can be set to either a list of group strings or a single string.
+In the case of a list of group names, the user will be authorized if he/she is a member of ANY of the given groups.
