@@ -34,6 +34,6 @@ setup(
     ],
     install_requires=[
         "Django>=1.9",
-        "django-cas-ng",
+        "django-cas-ng==3.6.0",
     ],
 )
