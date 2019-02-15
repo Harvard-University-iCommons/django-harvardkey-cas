@@ -105,17 +105,18 @@ class CASAuthBackend(CASBackend):
                 memberOf = attributes.get(u'memberOf')
                 group_ids = None
 
-                if type(memberOf) is list:
-                    group_ids = memberOf
-                else:
-                    group_ids = list(map(str.strip, memberOf.strip("[]").split(',')))
+                if memberOf:
+                    if type(memberOf) is list:
+                        group_ids = memberOf
+                    else:
+                        group_ids = list(map(str.strip, memberOf.strip("[]").split(',')))
 
-                if group_ids:
-                    request.session['USER_GROUPS'] = group_ids
-                    logger.debug(">>> storing groups for user %s in session "
-                                 "%s" % (user.username, group_ids))
+                    if group_ids:
+                        request.session['USER_GROUPS'] = group_ids
+                        logger.debug(">>> storing groups for user %s in session "
+                                    "%s" % (user.username, group_ids))
                 else:
-                    logger.error('No user groups from CAS handshake')
+                    logger.warning('No user groups from CAS handshake')
             except Exception as ex:
                 logger.error('could not load user groups, ex=%s' % ex)
 
