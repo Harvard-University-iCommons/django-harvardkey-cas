@@ -103,7 +103,13 @@ class CASAuthBackend(CASBackend):
             # fetch the user's groups and add them to the session
             try:
                 memberOf = attributes.get(u'memberOf')
-                group_ids = list(map(str.strip, memberOf.strip("[]").split(',')))
+                group_ids = None
+
+                if type(memberOf) is list:
+                    group_ids = memberOf
+                else:
+                    group_ids = list(map(str.strip, memberOf.strip("[]").split(',')))
+
                 if group_ids:
                     request.session['USER_GROUPS'] = group_ids
                     logger.debug(">>> storing groups for user %s in session "
@@ -117,4 +123,3 @@ class CASAuthBackend(CASBackend):
             logger.warn(" no user attributes found in CAS response")
 
         return user
-
