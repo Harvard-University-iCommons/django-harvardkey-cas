@@ -35,7 +35,7 @@ class CASAuthBackend(CASBackend):
         username, attributes, pgtiou = client.verify_ticket(ticket)
         if attributes and request:
             request.session['user_attributes'] = attributes
-            logger.debug('fetched user attributes from CAS %s' % (attributes))
+            logger.info('fetched user attributes from CAS %s' % (attributes))
 
         authenticationType = attributes.get('authenticationType')
         logger.debug('authenticationType =%s' % (authenticationType))
@@ -98,7 +98,7 @@ class CASAuthBackend(CASBackend):
                              % (user.last_name, user.first_name, user.email))
 
             except Exception as ex:
-                logger.debug('Exception retrieving person attributes')
+                logger.error('Exception retrieving person attributes, attributes received: {}'.format(attributes))
 
             # fetch the user's groups and add them to the session
             try:
