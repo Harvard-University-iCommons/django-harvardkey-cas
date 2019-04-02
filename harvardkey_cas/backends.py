@@ -35,7 +35,7 @@ class CASAuthBackend(CASBackend):
         username, attributes, pgtiou = client.verify_ticket(ticket)
         if attributes and request:
             request.session['user_attributes'] = attributes
-            logger.info('fetched user attributes from CAS %s' % (attributes))
+            logger.debug('fetched user attributes from CAS %s' % (attributes))
 
         authenticationType = attributes.get('authenticationType')
         logger.debug('authenticationType =%s' % (authenticationType))
