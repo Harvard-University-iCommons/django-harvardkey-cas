@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 from django_cas_ng.backends import CASBackend
 from django_cas_ng.utils import get_cas_client
@@ -102,7 +102,7 @@ class CASAuthBackend(CASBackend):
 
             # fetch the user's groups and add them to the session
             try:
-                memberOf = attributes.get(u'memberOf')
+                memberOf = attributes.get('memberOf')
                 group_ids = None
 
                 if memberOf:
