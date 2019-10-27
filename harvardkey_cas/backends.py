@@ -1,10 +1,8 @@
-from __future__ import print_function
+import logging
 
+from django.contrib.auth import get_user_model
 from django_cas_ng.backends import CASBackend
 from django_cas_ng.utils import get_cas_client
-from django.contrib.auth import get_user_model
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -90,9 +88,12 @@ class CASAuthBackend(CASBackend):
         if attributes:
             try:
                 logger.debug('configuring user attributes for user  %s' % user.username)
-                user.first_name = attributes.get('givenName', '')
-                user.last_name = attributes.get('sn', '')
-                user.email = attributes.get('mail', '')
+                first_name = attributes.get('givenName', '')
+                last_name = attributes.get('sn', '')
+                email = attributes.get('mail', '')
+                user.first_name = first_name[0] if type(first_name) is list else first_name
+                user.last_name = last_name[0] if type(last_name) is list else last_name
+                user.email = email[0] if type(email) is list else email
                 user.save()
                 logger.debug('after saving user with attributes %s, %s, %s'
                              % (user.last_name, user.first_name, user.email))
