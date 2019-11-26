@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 
 # Backwards compatibility for django 1.x
 try:
-    from django.core.urlresolvers import reverse, reverse_lazy
+    from django.urls import reverse, reverse_lazy
 except ModuleNotFoundError:
     from django.urls import reverse, reverse_lazy
 

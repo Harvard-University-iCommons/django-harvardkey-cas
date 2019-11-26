@@ -99,11 +99,11 @@ class CASAuthBackend(CASBackend):
                              % (user.last_name, user.first_name, user.email))
 
             except Exception as ex:
-                logger.debug('Exception retrieving person attributes')
+                logger.error('Exception retrieving person attributes, attributes received: {}'.format(attributes))
 
             # fetch the user's groups and add them to the session
             try:
-                memberOf = attributes.get(u'memberOf')
+                memberOf = attributes.get('memberOf')
                 group_ids = None
 
                 if memberOf:
