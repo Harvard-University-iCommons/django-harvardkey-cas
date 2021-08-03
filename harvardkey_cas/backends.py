@@ -30,6 +30,7 @@ class CASAuthBackend(CASBackend):
         """
 
         client = get_cas_client(service_url=service)
+        logger.debug(f'CAS client type: {type(client)}')
         username, attributes, pgtiou = client.verify_ticket(ticket)
 
         if not username:
