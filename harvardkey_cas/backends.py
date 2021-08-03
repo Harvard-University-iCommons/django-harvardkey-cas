@@ -37,7 +37,7 @@ class CASAuthBackend(CASBackend):
             logger.warn(f"no username returned by CAS server for ticket {ticket}")
             return None
 
-        if attributes and request:
+        if attributes:
             request.session['user_attributes'] = attributes
             logger.debug(f'fetched user attributes from CAS: {attributes}')
 
