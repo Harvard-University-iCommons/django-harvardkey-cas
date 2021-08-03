@@ -31,6 +31,11 @@ class CASAuthBackend(CASBackend):
 
         client = get_cas_client(service_url=service)
         username, attributes, pgtiou = client.verify_ticket(ticket)
+
+        if not username:
+            logger.warn(f"no username returned by CAS server for ticket {ticket}")
+            return None
+
         if attributes and request:
             request.session['user_attributes'] = attributes
             logger.debug(f'fetched user attributes from CAS: {attributes}')
@@ -38,11 +43,7 @@ class CASAuthBackend(CASBackend):
             authentication_type = attributes.get('authenticationType')
             logger.debug(f'authenticationType = {authentication_type}')
         else:
-            logger.warn(f'no attributes found in CAS response for ticket {ticket}')
-
-        if not username:
-            logger.warn("no username returned by CAS server")
-            return None
+            logger.warn(f'no attributes found in CAS response for username {username} and ticket {ticket}')
 
         username = self.clean_username(username)
         logger.debug(f'cleaned username is {username}')
