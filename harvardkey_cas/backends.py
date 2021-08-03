@@ -30,30 +30,33 @@ class CASAuthBackend(CASBackend):
         """
 
         client = get_cas_client(service_url=service)
+        logger.debug(f'CAS client type: {type(client)}')
         username, attributes, pgtiou = client.verify_ticket(ticket)
-        if attributes and request:
-            request.session['user_attributes'] = attributes
-            logger.debug('fetched user attributes from CAS %s' % (attributes))
-
-        authenticationType = attributes.get('authenticationType')
-        logger.debug('authenticationType =%s' % (authenticationType))
 
         if not username:
+            logger.warn(f"no username returned by CAS server for ticket {ticket}")
             return None
 
+        if attributes:
+            request.session['user_attributes'] = attributes
+            logger.debug(f'fetched user attributes from CAS: {attributes}')
+
+            authentication_type = attributes.get('authenticationType')
+            logger.debug(f'authenticationType = {authentication_type}')
+        else:
+            logger.warn(f'no attributes found in CAS response for username {username} and ticket {ticket}')
+
         username = self.clean_username(username)
-        logger.debug('authen_userid is type %s, cleaned username is %s' %
-                     (authenticationType, username))
-        # logger.debug('cleaned username is type %s' % type(username))
-        UserModel = get_user_model()
+        logger.debug(f'cleaned username is {username}')
+        user_model = get_user_model()
         user = None
 
         # Note that this could be accomplished in one try-except clause, but
         # instead we use get_or_create when creating unknown users since it has
         # built-in safeguards for multiple threads.
         if self.create_unknown_user:
-            user, created = UserModel.objects.get_or_create(**{
-                UserModel.USERNAME_FIELD: username
+            user, created = user_model.objects.get_or_create(**{
+                user_model.USERNAME_FIELD: username
             })
             if created:
                 logger.debug('authenticate created a new user for %s' % username)
@@ -63,8 +66,8 @@ class CASAuthBackend(CASBackend):
         else:
             logger.debug('automatic new user creation is turned OFF! just try to find and existing record')
             try:
-                user = UserModel.objects.get_by_natural_key(username)
-            except UserModel.DoesNotExist:
+                user = user_model.objects.get_by_natural_key(username)
+            except user_model.DoesNotExist:
                 logger.debug('authenticate could not find user %s' % username)
                 pass
 
@@ -98,24 +101,23 @@ class CASAuthBackend(CASBackend):
                 logger.debug('after saving user with attributes %s, %s, %s'
                              % (user.last_name, user.first_name, user.email))
 
-            except Exception as ex:
+            except Exception:
                 logger.error('Exception retrieving person attributes, attributes received: {}'.format(attributes))
 
             # fetch the user's groups and add them to the session
             try:
-                memberOf = attributes.get('memberOf')
+                member_of = attributes.get('memberOf')
                 group_ids = None
 
-                if memberOf:
-                    if type(memberOf) is list:
-                        group_ids = memberOf
+                if member_of:
+                    if type(member_of) is list:
+                        group_ids = member_of
                     else:
-                        group_ids = list(map(str.strip, memberOf.strip("[]").split(',')))
+                        group_ids = list(map(str.strip, member_of.strip("[]").split(',')))
 
                     if group_ids:
                         request.session['USER_GROUPS'] = group_ids
-                        logger.debug(">>> storing groups for user %s in session "
-                                    "%s" % (user.username, group_ids))
+                        logger.debug(f">>> storing groups for user {user.username} in session: {group_ids}")
                 else:
                     logger.warning('No user groups from CAS handshake')
             except Exception as ex:
