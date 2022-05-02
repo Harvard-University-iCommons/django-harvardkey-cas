@@ -9,7 +9,7 @@ def group_membership_restriction(allowed_groups,
                                  redirect_url=reverse_lazy('not_authorized'),
                                  raise_exception=False):
     def decorator(view_func):
-        @wraps(view_func, assigned=available_attrs(view_func))
+        @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if not isinstance(allowed_groups, (list, tuple)):
                 allowed = (allowed_groups, )
