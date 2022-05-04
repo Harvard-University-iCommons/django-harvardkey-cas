@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-harvardkey-cas',
-    version='2.4',
+    version='3.0',
     packages=find_packages(),
     include_package_data=True,
     license='BSD License',  # example license
@@ -33,7 +33,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires=[
-        "Django>=2.2.4",
+        "Django>=3.0.0",
         "django-cas-ng>=4.2.1,<5",
     ],
 )
