@@ -18,22 +18,25 @@ class LoginRequiredMixin(object):
 
 class GroupMembershipRestrictionMixin(object):
     allowed_groups = None
-    redirect_url = reverse_lazy('not_authorized')
+    redirect_url = reverse_lazy("not_authorized")
     raise_exception = False
 
     def dispatch(self, request, *args, **kwargs):
         if self.allowed_groups is None:
             raise ImproperlyConfigured(
                 "'GroupMembershipRequiredMixin' requires "
-                "'allowed_groups' attribute to be set.")
+                "'allowed_groups' attribute to be set."
+            )
         if not isinstance(self.allowed_groups, (list, tuple)):
-            allowed = (self.allowed_groups, )
+            allowed = (self.allowed_groups,)
         else:
             allowed = self.allowed_groups
 
-        group_ids = request.session.get('USER_GROUPS', [])
+        group_ids = request.session.get("USER_GROUPS", [])
         if set(allowed) & set(group_ids):
-            return super(GroupMembershipRestrictionMixin, self).dispatch(request, *args, **kwargs)
+            return super(GroupMembershipRestrictionMixin, self).dispatch(
+                request, *args, **kwargs
+            )
 
         if self.raise_exception:
             raise PermissionDenied
@@ -45,4 +48,5 @@ class GroupMembershipRequiredMixin(LoginRequiredMixin, GroupMembershipRestrictio
     """
     Mixin is a shortcut to use both LoginRequiredMixin and GroupMembershipRequiredMixin
     """
+
     pass
