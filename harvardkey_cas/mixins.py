@@ -5,12 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
-
-# Backwards compatibility for django 1.x
-try:
-    from django.urls import reverse, reverse_lazy
-except ModuleNotFoundError:
-    from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 
 logger = logging.getLogger(__name__)
 
@@ -51,4 +46,3 @@ class GroupMembershipRequiredMixin(LoginRequiredMixin, GroupMembershipRestrictio
     Mixin is a shortcut to use both LoginRequiredMixin and GroupMembershipRequiredMixin
     """
     pass
-

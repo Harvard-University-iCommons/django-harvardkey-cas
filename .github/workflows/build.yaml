@@ -1,0 +1,76 @@
+name: Build and Publish to CodeArtifact
+
+on:
+  push:
+    branches: ["develop"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["develop"]
+
+  workflow_dispatch:
+
+env:
+  AWS_REGION: 'us-east-1'
+  AWS_ROLE: arn:aws:iam::482956169056:role/uw-github-actions-code-artifact-publish-role
+  UV_INDEX_PRIVATE_REGISTRY_USERNAME: aws
+
+jobs:
+  quality-checks:
+    name: Quality checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint with ruff
+        uses: astral-sh/ruff-action@v3
+
+      - name: Check formatting with ruff
+        run: ruff format --check
+
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+    needs:
+      - quality-checks
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write # This is required for requesting the JWT
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE }}
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: 'no'
+
+      - name: Get CodeArtifact authorization token
+        id: codeartifact-auth
+        run: |
+          echo "UV_INDEX_PRIVATE_REGISTRY_PASSWORD=$(aws codeartifact get-authorization-token --domain huit-academic-technology --query authorizationToken --output text)" >> $GITHUB_ENV
+          echo "UV_PUBLISH_PASSWORD=$(aws codeartifact get-authorization-token --domain huit-academic-technology --query authorizationToken --output text)" >> $GITHUB_ENV
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install the project
+        run: uv -v sync --locked --all-extras --dev --keyring-provider disabled
+
+      - name: Build package
+        run: uv build --keyring-provider disabled
+
+      - name: Publish package to private repository
+        # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: uv publish --index private-registry --keyring-provider disabled
